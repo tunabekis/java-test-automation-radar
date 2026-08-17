@@ -93,18 +93,17 @@ public class Radar_Test {
         assertTrue(highs.stream().allMatch(Detection::isHighConfidence));
     }
 
-    // (Assertion 30-34): Tests the Threat Level Tiers at boundary conditions (New Test)
-    // --- THIS IS THE FIXED TEST ---
+    // (Assertion 30-34): Tests the threat level tiers at their boundary conditions.
     @Test
     void threatLevelBoundaryChecks() {
         // snrThreshold = 1.0. Tiers are: >2.0 (HIGH), >1.2 (MEDIUM), <=1.2 (LOW)
         Radar radar = new Radar("T", 10.0, 1.0);
         double dist = 1.0; // Fixed distance for easy SNR calculation: SNR = RCS / 2.0
 
-        // Target M: RCS=2.41. snr = 1.205 (Just ABOVE 1.2 -> MEDIUM)
-        Target tM = new Target("M", dist, 0, 2.41); // <-- FIX
-        // Target H: RCS=4.01. snr = 2.005 (Just ABOVE 2.0 -> HIGH)
-        Target tH = new Target("H", dist, 0, 4.01); // <-- FIX
+        // Target M: RCS=2.41. snr = 1.205 (just above 1.2 -> MEDIUM)
+        Target tM = new Target("M", dist, 0, 2.41);
+        // Target H: RCS=4.01. snr = 2.005 (just above 2.0 -> HIGH)
+        Target tH = new Target("H", dist, 0, 4.01);
         // Target L: RCS=2.0. snr = 1.0 (Threshold boundary for LOW)
         Target tL = new Target("L", dist, 0, 2.0);
 
@@ -126,7 +125,7 @@ public class Radar_Test {
         assertNotNull(low);
     }
 
-    // (Assertion 35-39): Tests range boundary conditions for detection (New Test)
+    // (Assertion 35-39): Tests range boundary conditions for detection.
     @Test
     void rangeBoundaryDetection() {
         Radar radar = new Radar("R4", 5.0, 0.1); // Max range 5.0 km
@@ -157,7 +156,7 @@ public class Radar_Test {
         assertEquals(5.0, detections.stream().filter(d -> d.getTargetId().equals("T_At")).findFirst().get().getDistanceKm(), 1e-9);
     }
 
-    // (Assertion 40-42): Tests scenarios where no targets pass (Negative Testing)
+    // (Assertion 40-42): Tests scenarios where no targets pass (negative testing).
     @Test
     void noTargetsPassFilters() {
         Radar radar = new Radar("R5", 10.0, 5.0); // Very high threshold
@@ -178,7 +177,7 @@ public class Radar_Test {
         assertNotNull(radar);
     }
 
-    // (Assertion 43-45): Tests bearing/distance helpers for boundary cases (New Test)
+    // (Assertion 43-45): Tests bearing/distance helpers for boundary cases.
     @Test
     void bearingBoundaryCases() {
         // Test 0/360 degrees
@@ -197,7 +196,7 @@ public class Radar_Test {
     }
 
     // ----------------------------------------------------------------
-    // -- HOMEWORK 2: BASIS PATH TESTS (6 NEW TESTS)
+    // Basis path tests for Radar.scan() (6 tests, one per independent path)
     // ----------------------------------------------------------------
 
     // Path 1: Loop Exit (0 Iterations)

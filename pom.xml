@@ -5,19 +5,26 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>edu.tedu</groupId>
-    <artifactId>radar-system</artifactId>
+    <artifactId>proximity-radar</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>radar-system</name>
+    <name>proximity-radar</name>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Versions -->
         <junit.version>5.10.2</junit.version>
-        <surefire.version>3.2.5</surefire.version>
+        <junit.jupiter.version>5.10.2</junit.jupiter.version>
+        <junit.platform.suite.version>1.10.1</junit.platform.suite.version>
+        <surefire.plugin.version>3.2.5</surefire.plugin.version>
+        <pitest.version>1.16.0</pitest.version>
+        <pitest.junit5.plugin.version>1.2.1</pitest.junit5.plugin.version>
+        <mockito.version>5.11.0</mockito.version>
     </properties>
 
-    <!-- JUnit BOM ile tüm JUnit bağımlılıklarını aynı sürüme sabitle -->
+    <!-- Align all JUnit artifacts -->
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -31,38 +38,134 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- JUnit Jupiter (API + Engine toplu) -->
+        <!-- JUnit Jupiter (API + Engine) -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- Parametreli testler gerekiyorsa (opsiyonel, BOM sayesinde sürüm belirtmiyoruz) -->
+        <!-- Parametrized tests (optional) -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
             <scope>test</scope>
         </dependency>
 
-        <!-- Suite anotasyonları (@Suite, @SelectClasses) -->
+        <!-- Suite API -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite-api</artifactId>
+            <version>${junit.platform.suite.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Suite annotations -->
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-suite</artifactId>
+            <version>${junit.platform.suite.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Suite Engine -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite-engine</artifactId>
+            <version>${junit.platform.suite.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- PIT JUnit 5 plugin (required for PIT to discover and run JUnit 5 tests) -->
+        <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-junit5-plugin</artifactId>
+            <version>${pitest.junit5.plugin.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Mockito: mocking support for RadarIntegrationTest -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-subclass</artifactId>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <!-- JUnit 5 test runner -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${surefire.version}</version>
+                <version>${surefire.plugin.version}</version>
                 <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*Suite.java</include>
+                    </includes>
                     <useModulePath>false</useModulePath>
+                </configuration>
+            </plugin>
+
+            <!-- PIT Mutation Testing -->
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>${pitest.version}</version>
+                <configuration>
+                    <!-- Production classes to mutate -->
+                    <targetClasses>
+                        <param>edu.tedu.radar.*</param>
+                    </targetClasses>
+
+                    <!-- Test classes to run against the mutants -->
+                    <targetTests>
+                        <param>**/*Test</param>
+                        <param>**/*Suite</param>
+                    </targetTests>
+
+                    <!-- Broader mutator set for stronger coverage -->
+                    <mutators>
+                        <mutator>STRONGER</mutator>
+                    </mutators>
+
+                    <!-- Report formats -->
+                    <outputFormats>
+                        <param>HTML</param>
+                        <param>XML</param>
+                    </outputFormats>
+
+                    <!-- Performance / stability -->
+                    <threads>4</threads>
+                    <failWhenNoMutations>false</failWhenNoMutations>
+                    <timestampedReports>true</timestampedReports>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Central</name>
+            <url>https://repo1.maven.org/maven2/</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+    </repositories>
 </project>

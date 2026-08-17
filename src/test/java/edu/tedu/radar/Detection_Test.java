@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class Detection_Test {
 
-    // --- HW1 TESTS (15 Assertions) ---
+    // --- Constructor, getters and confidence logic (15 assertions) ---
 
     // (Assertion 7-12): Checks valid construction and all getters
     @Test
@@ -32,7 +32,7 @@ public class Detection_Test {
         assertTrue(highThreat.isHighConfidence());
     }
 
-    // --- HW2: BASIS PATH TESTS (4 Tests for assessDetectionPriority) ---
+    // --- Basis path tests for assessDetectionPriority() (4 tests) ---
 
     /**
      * Basis Path 1: (A -> B -> C -> I)
@@ -94,5 +94,27 @@ public class Detection_Test {
                 () -> assertEquals("PRIORITY_4_LOG", d_med_low_snr.assessDetectionPriority()),
                 () -> assertEquals("PRIORITY_4_LOG", d_low.assessDetectionPriority())
         );
+    }
+
+    // --- Equality-boundary tests (kill CONDITIONALS_BOUNDARY mutants on distance/snr) ---
+
+    /**
+     * At exactly distance == 10.0 the "distance &lt; 10.0" condition is false,
+     * so a HIGH threat must fall through to PRIORITY_2_MONITOR, not PRIORITY_1_INTERCEPT.
+     */
+    @Test
+    void testAssessPriority_DistanceBoundaryEqualsTen() {
+        Detection d = new Detection("T5", 10.0, 0, 5.0, ThreatLevel.HIGH);
+        assertEquals("PRIORITY_2_MONITOR", d.assessDetectionPriority());
+    }
+
+    /**
+     * At exactly snr == 3.0 the "snr &gt; 3.0" condition is false,
+     * so a MEDIUM threat must fall through to PRIORITY_4_LOG, not PRIORITY_3_TRACK.
+     */
+    @Test
+    void testAssessPriority_SnrBoundaryEqualsThree() {
+        Detection d = new Detection("T6", 20.0, 0, 3.0, ThreatLevel.MEDIUM);
+        assertEquals("PRIORITY_4_LOG", d.assessDetectionPriority());
     }
 }
