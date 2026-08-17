@@ -1,5 +1,7 @@
 # Java Test Automation Radar
 
+[![CI](https://github.com/AstoKE/java-test-automation-radar/actions/workflows/ci.yml/badge.svg)](https://github.com/AstoKE/java-test-automation-radar/actions/workflows/ci.yml)
+
 A small Java simulation of a proximity radar system, built as a vehicle for
 practicing software testing techniques: unit testing, parameterized testing,
 basis-path testing, mutation testing, and mocked integration testing.
